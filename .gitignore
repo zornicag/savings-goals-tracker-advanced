@@ -1,3 +1,38 @@
+# IntelliJ IDEA project files
 .idea/
-target/
 *.iml
+
+# Build output
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Build artifacts
+target/
+*.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
