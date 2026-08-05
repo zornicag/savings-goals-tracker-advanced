@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transactions - Savings Goals Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">Savings Goals Tracker</div>
+    <div class="nav-links">
+        <span style="color:#d1fae5;font-weight:700;margin-right:10px;" th:text="${'Logged in as: ' + currentUsername}">Logged in as: user</span>
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/goals}">Goals</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/transactions}">Transactions</a>
+        <a th:href="@{/}">Logout</a>
+    </div>
+</nav>
+
+<section class="hero" style="min-height: 280px;">
+    <div class="hero-content">
+        <h1>Transactions</h1>
+        <p>View all your deposits and withdrawals.</p>
+        <a th:href="@{/transactions/add}" class="btn primary">Add Transaction</a>
+    </div>
+</section>
+
+<section style="padding: 50px 60px;">
+    <div class="card" th:if="${#lists.isEmpty(transactionGroups)}" style="max-width: 700px; margin: 0 auto;">
+        <h3>No transactions yet</h3>
+        <p>Add your first transaction to start tracking deposits and withdrawals.</p>
+    </div>
+
+    <div th:each="group : ${transactionGroups}" style="margin-bottom: 26px;">
+        <h2 style="color:#14532d; margin-bottom: 10px;" th:text="${group.goalName}">Goal name</h2>
+
+        <div class="card" style="padding: 0; overflow-x: auto;">
+            <table style="width: 100%; table-layout: fixed; border-collapse: collapse; min-width: 920px;">
+                <colgroup>
+                    <col style="width: 12%;">
+                    <col style="width: 12%;">
+                    <col style="width: 15%;">
+                    <col style="width: 22%;">
+                    <col style="width: 17%;">
+                    <col style="width: 22%;">
+                </colgroup>
+                <thead>
+                <tr style="background-color: #ecfdf5; color: #14532d;">
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Date</th>
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Type</th>
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Amount</th>
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Balance after transaction</th>
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Goal status</th>
+                    <th style="padding: 14px; text-align: center; border-bottom: 1px solid #bbf7d0;">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction : ${group.transactions}">
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;"
+                        th:text="${#temporals.format(transaction.createdAt, 'yyyy-MM-dd')}">2026-06-21</td>
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;"
+                        th:text="${transaction.type}">DEPOSIT</td>
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                        <span th:text="${transaction.amount}">300.00</span> EUR
+                    </td>
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                        <span th:text="${transaction.balanceAfter}">100.00</span> EUR
+                    </td>
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                        <span th:if="${transaction.balanceAfter != null and transaction.savingsGoal != null and transaction.savingsGoal.targetAmount != null and transaction.balanceAfter ge transaction.savingsGoal.targetAmount}"
+                              style="color:#15803d;font-weight:700;">Target is reached</span>
+                        <span th:if="${transaction.balanceAfter == null or transaction.savingsGoal == null or transaction.savingsGoal.targetAmount == null or transaction.balanceAfter lt transaction.savingsGoal.targetAmount}"
+                              style="color:#1d4ed8;font-weight:700;">In progress</span>
+                    </td>
+                    <td style="padding: 12px 14px; border-bottom: 1px solid #e5e7eb; text-align: center;"
+                        th:text="${transaction.description}">Weekly deposit</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h4>Project name</h4>
+            <p>Savings Goals Tracker</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Description</h4>
+            <p>Create and track your savings goals, manage deposits and withdrawals, and follow your progress.</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/goals}">Goals</a></li>
+                <li><a th:href="@{/categories}">Categories</a></li>
+                <li><a th:href="@{/transactions}">Transactions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h4>Contact</h4>
+            <p>Email: <a href="mailto:support@savingsgoalstracker.com">support@savingsgoalstracker.com</a><br>Phone: +359 811 715 532</p>
+        </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Savings Goals Tracker. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
