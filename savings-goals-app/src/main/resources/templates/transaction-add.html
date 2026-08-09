@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Transaction - Savings Goals Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">Savings Goals Tracker</div>
+    <div class="nav-links">
+        <span style="color:#d1fae5;font-weight:700;margin-right:10px;" th:text="${'Logged in as: ' + currentUsername}">Logged in as: user</span>
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/goals}">Goals</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/transactions}">Transactions</a>
+        <a th:href="@{/}">Logout</a>
+    </div>
+</nav>
+
+<section class="hero" style="min-height: 380px;">
+    <div class="hero-content">
+        <h1>Add Transaction</h1>
+        <p>Record a deposit or withdrawal for your savings goal.</p>
+
+        <div style="max-width:520px;margin:28px auto 0; text-align:left;">
+            <div class="card">
+                <form th:action="@{/transactions/add}" th:object="${transactionForm}" method="post" novalidate>
+
+                    <div th:if="${goalError}"
+                         style="background:#fee2e2;color:#991b1b;padding:10px;border-radius:8px;margin-bottom:12px;"
+                         th:text="${goalError}"></div>
+
+                    <label for="savingsGoalId">Savings Goal</label>
+                    <select id="savingsGoalId" th:field="*{savingsGoalId}">
+                        <option value="">-- Select savings goal --</option>
+                        <option th:each="goal : ${goals}"
+                                th:value="${goal.id}"
+                                th:text="${goal.name + ' - current: ' + goal.currentAmount}">Goal</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('savingsGoalId')}" th:errors="*{savingsGoalId}"
+                         style="color:#b91c1c;margin-top:6px;margin-bottom:10px;"></div>
+
+                    <label for="type">Type</label>
+                    <select id="type" th:field="*{type}">
+                        <option value="">-- Select type --</option>
+                        <option th:each="t : ${transactionTypes}"
+                                th:value="${t}"
+                                th:text="${t}">TYPE</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('type')}" th:errors="*{type}"
+                         style="color:#b91c1c;margin-top:6px;margin-bottom:10px;"></div>
+
+                    <label for="amount">Amount (EUR)</label>
+                    <input type="number" id="amount" th:field="*{amount}" step="0.01" min="0.01" placeholder="100.00">
+                    <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"
+                         style="color:#b91c1c;margin-top:6px;margin-bottom:10px;"></div>
+
+                    <label for="description">Description</label>
+                    <input type="text" id="description" th:field="*{description}" placeholder="e.g. Monthly deposit">
+                    <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
+                         style="color:#b91c1c;margin-top:6px;margin-bottom:10px;"></div>
+
+                    <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:12px;">
+                        <button type="submit" class="btn primary">Save Transaction</button>
+                        <a th:href="@{/transactions}" class="btn secondary">Back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h4>Project name</h4>
+            <p>Savings Goals Tracker</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Description</h4>
+            <p>Create and track your savings goals, manage deposits and withdrawals, and follow your progress.</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/goals}">Goals</a></li>
+                <li><a th:href="@{/categories}">Categories</a></li>
+                <li><a th:href="@{/transactions}">Transactions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h4>Contact</h4>
+            <p>Email: <a href="mailto:support@savingsgoalstracker.com">support@savingsgoalstracker.com</a><br>Phone: +359 811 715 532</p>
+        </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Savings Goals Tracker. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
