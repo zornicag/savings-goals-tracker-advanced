@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories - Savings Goals Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-grid {
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: auto;
+        }
+
+        .categories-icons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 22px;
+            font-size: 36px;
+        }
+
+        .categories-icons span {
+            display: inline-block;
+            animation: categoriesIconFloat 4.8s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .categories-icons span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .categories-icons span:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+
+        .categories-icons span:nth-child(3) {
+            animation-delay: 1.4s;
+        }
+
+        @keyframes categoriesIconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Savings Goals Tracker</div>
+
+    <div class="nav-links">
+        <span style="color:#d1fae5;font-weight:700;margin-right:10px;"
+              th:text="${'Logged in as: ' + currentUsername}">
+            Logged in as: user
+        </span>
+
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/goals}">Goals</a>
+        <a th:href="@{/categories}">Categories</a>
+        <a th:href="@{/transactions}">Transactions</a>
+        <a th:href="@{/exchange-rates}">Exchange Rates</a>
+        <a th:href="@{/profile}">Profile</a>
+        <a th:href="@{/}">Logout</a>
+    </div>
+</nav>
+
+<section class="hero" style="min-height: 280px;">
+    <div class="hero-content">
+
+        <h1>Categories</h1>
+
+        <p>Organize your goals with simple, clear categories.</p>
+
+        <a th:href="@{/categories/add}"
+           class="btn primary">
+            Add Category
+        </a>
+
+        <div class="categories-icons" aria-hidden="true">
+            <span>🏷️</span>
+            <span>🗂️</span>
+            <span>💰</span>
+        </div>
+
+        <p th:if="${param.deleteError}"
+           style="color:#b91c1c; margin-top:15px;">
+            Category cannot be deleted because it is used by an existing savings goal.
+        </p>
+
+    </div>
+</section>
+
+<section class="card-grid">
+
+    <div class="card" th:if="${#lists.isEmpty(categories)}">
+        <h3>No categories yet</h3>
+        <p>Create your first category to organize your goals.</p>
+    </div>
+
+    <div class="card" th:each="category : ${categories}">
+
+        <h3 th:text="${category.name}">
+            Category name
+        </h3>
+
+        <p th:text="${#strings.isEmpty(category.description)
+        ? 'No description'
+        : category.description}">
+            Description
+        </p>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+
+            <a th:href="@{/categories/edit/{id}(id=${category.id})}"
+               class="btn secondary">
+                Edit
+            </a>
+
+            <form th:action="@{/categories/delete/{id}(id=${category.id})}"
+                  method="post">
+
+                <button type="submit"
+                        class="btn primary">
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</section>
+
+<footer class="footer">
+    <div class="footer-content">
+
+        <div class="footer-column">
+            <h4>Project name</h4>
+            <p>Savings Goals Tracker</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Description</h4>
+            <p>
+                Create and track your savings goals,
+                manage deposits and withdrawals,
+                and follow your progress.
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Navigation</h4>
+            <ul>
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/goals}">Goals</a></li>
+                <li><a th:href="@{/categories}">Categories</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h4>Contact</h4>
+            <p>
+                Email:
+                <a href="mailto:support@savingsgoalstracker.com">
+                    support@savingsgoalstracker.com
+                </a>
+                <br>
+                Phone: +359 811 715 532
+            </p>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        &copy; 2026 Savings Goals Tracker. All rights reserved.
+    </div>
+</footer>
+
+</body>
+</html>
