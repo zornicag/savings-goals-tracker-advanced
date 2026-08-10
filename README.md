@@ -1,59 +1,74 @@
-<p align="center">
-  <img src="screenshots/01-home-page.png" width="30%">
-  <img src="screenshots/10-goal-status-progress.png" width="30%">
-  <img src="screenshots/08-transactions-page.png" width="30%">
-</p>
+![Savings Goal Tracker](docs/savings-goals-banner.svg)
 
-# Savings Goals Tracker
+# Savings Goal Tracker
 
-GitHub repository: https://github.com/zornicag/savings-goals-tracker
+Spring Advanced project with two Spring Boot applications: a Spring MVC + Thymeleaf UI and a REST microservice for exchange-rate data, connected through OpenFeign.
 
-## 1. Project Title
+| Module | Role | Port | Database | Notes |
+| --- | --- | --- | --- | --- |
+| `savings-goals-app` | Main Spring MVC + Thymeleaf application | `8080` | `savings_goals_tracker` | Uses Spring Security, OpenFeign, JPA, and a custom admin initializer |
+| `goal-insights-service` | REST microservice consumed through OpenFeign | `8081` | `goal_insights_db` | Uses caching, scheduling, JPA, and REST exception handling |
 
-Savings Goals Tracker
+## Architecture
 
-## 2. Overview
+- `savings-goals-app` is the user-facing web app.
+- `goal-insights-service` is a separate REST service that manages exchange rates.
+- The main app calls the microservice through `GoalInsightsClient`, which targets `http://localhost:8081`.
+- The two applications use separate MySQL databases and separate Maven builds.
+- `savings-goals-app` uses a `dev` profile and `application-dev.properties`.
 
-Savings Goals Tracker is a Spring Boot web application for managing personal savings goals. Users can register, log in, create categories, create savings goals, add deposits, make withdrawals, and track goal progress.
+## Main Features
 
-The application uses session-based authentication, supports user roles, and keeps all goals and transactions tied to the logged-in user.
+### savings-goals-app
 
-## 3. Features
+- Public registration and login for regular users.
+- Session-based authentication with a custom success handler.
+- User profile view and update.
+- Password change with validation.
+- Category management.
+- Savings goal management.
+- Deposit and withdrawal transactions.
+- Balance updates and goal progress tracking.
+- Admin user management: list users, change roles, delete users.
+- Exchange-rate UI backed by the microservice.
 
-* User registration and login
-* Custom session-based authentication
-* Password encoding with `PasswordEncoder`
-* User roles: `USER` and `ADMIN`
-* Admin user initializer
-* Categories
-* Savings goals
-* Transactions
-* Deposit and withdraw
-* Balance tracking
-* Goal status: `In progress` / `Target is reached`
-* Logged-in username shown in the header
-* User-specific goals and transactions
+### goal-insights-service
 
-## 4. Technology Stack
+- REST endpoints for exchange rates.
+- Create, update, delete, and list exchange rates.
+- Exchange-rate calculation.
+- Cache-backed reads for exchange rates.
+- Scheduled logging tasks.
 
-* Java 17
-* Spring Boot
-* Spring MVC
-* Thymeleaf
-* Spring Data JPA
-* MySQL
-* Maven
-* Lombok
-* HTML
-* CSS
+## Security
 
-## 5. Project Structure
+- `USER` accounts are created through public registration.
+- The `ADMIN` account is created automatically at startup by `AdminUserInitializer` using `app.admin.password`.
+- Public access is allowed for `/`, `/register`, `/login`, `/css/**`, and `/images/**`.
+- `/profile/**` requires authentication.
+- `/admin/**` requires the `ADMIN` role.
+- Login uses email and password.
+- The login success handler stores the current user id and username in the session.
+
+## Project Structure
+
+### savings-goals-app
 
 ```text
 src/main/java/app
+├── SavingsGoalsTrackerApplication.java
+├── client
+│   ├── GoalInsightsClient.java
+│   └── dto
+│       └── ExchangeRateResponse.java
 ├── config
 │   ├── AdminUserInitializer.java
-│   └── BeanConfiguration.java
+│   ├── AuthenticationSuccessHandler.java
+│   ├── BeanConfiguration.java
+│   └── SecurityConfig.java
+├── exception
+│   ├── GlobalExceptionHandler.java
+│   └── SavingsGoalAppException.java
 ├── mapper
 │   └── user
 │       └── UserMapper.java
@@ -90,6 +105,7 @@ src/main/java/app
 │   └── user
 │       └── UserRepository.java
 ├── service
+│   ├── GoalInsightsService.java
 │   ├── category
 │   │   └── CategoryService.java
 │   ├── savingsgoal
@@ -97,83 +113,170 @@ src/main/java/app
 │   ├── transaction
 │   │   └── TransactionService.java
 │   └── user
+│       ├── CustomUserDetailsService.java
 │       └── UserService.java
 └── web
+    ├── AdminController.java
     ├── CategoryController.java
+    ├── ExchangeRateViewController.java
+    ├── GoalInsightsController.java
     ├── IndexController.java
     ├── SavingsGoalController.java
     ├── TransactionController.java
     └── UserController.java
 
 src/main/resources
+├── application-dev.properties
 ├── static
 │   └── css
 │       └── style.css
-├── templates
-│   ├── categories.html
-│   ├── category-add.html
-│   ├── goal-add.html
-│   ├── goals.html
-│   ├── home.html
-│   ├── index.html
-│   ├── login.html
-│   ├── register.html
-│   ├── transaction-add.html
-│   └── transactions.html
-└── application-dev.properties
+└── templates
+    ├── admin-users.html
+    ├── categories.html
+    ├── category-add.html
+    ├── category-edit.html
+    ├── exchange-rates.html
+    ├── goal-add.html
+    ├── goal-edit.html
+    ├── goals.html
+    ├── home.html
+    ├── index.html
+    ├── login.html
+    ├── profile.html
+    ├── register.html
+    ├── transaction-add.html
+    └── transactions.html
 
 src/test/java/app
-└── SavingsGoalsTrackerApplicationTests.java
+├── config
+│   └── SecurityConfigTest.java
+├── service
+│   ├── category
+│   │   └── CategoryServiceTest.java
+│   ├── savingsgoal
+│   │   └── SavingsGoalServiceTest.java
+│   ├── transaction
+│   │   └── TransactionServiceTest.java
+│   └── user
+│       └── UserServiceTest.java
+└── web
+    ├── AdminControllerTest.java
+    ├── CategoryControllerTest.java
+    ├── SavingsGoalControllerTest.java
+    ├── TransactionControllerTest.java
+    └── UserControllerTest.java
 ```
 
-## 6. Screenshots
+### goal-insights-service
 
-### Home Page
-![Home Page](screenshots/01-home-page.png)
+```text
+src/main/java/app/goalinsights
+├── GoalInsightsServiceApplication.java
+├── exception
+│   ├── ExchangeRateNotFoundException.java
+│   └── GlobalExceptionHandler.java
+├── model
+│   └── entity
+│       └── ExchangeRate.java
+├── repository
+│   └── ExchangeRateRepository.java
+├── service
+│   ├── ExchangeRateScheduler.java
+│   └── ExchangeRateService.java
+└── web
+    └── ExchangeRateController.java
 
-### Register Page
-![Register Page](screenshots/02-register-page.png)
+src/main/resources
+└── application.properties
 
-### Login Page
-![Login Page](screenshots/03-login-page.png)
+src/test/java/app
+├── goalinsights
+│   ├── service
+│   │   └── ExchangeRateServiceTest.java
+│   └── web
+│       └── ExchangeRateControllerTest.java
 
-### Admin Goals Page
-![Admin Goals Page](screenshots/04-admin-goals-page.png)
+src/test/resources
+└── application.properties
+```
 
-### Add Goal Page
-![Add Goal Page](screenshots/05-add-goal-page.png)
+## Technology Stack
 
-### Categories Page
-![Categories Page](screenshots/06-categories-page.png)
+| Area | Stack |
+| --- | --- |
+| Runtime | Java 17 |
+| Backend | Spring Boot 3.5.16 |
+| Web | Spring MVC, Thymeleaf |
+| Data | Spring Data JPA, MySQL |
+| Security | Spring Security, BCrypt |
+| Integration | Spring Cloud OpenFeign |
+| Build | Maven |
+| Testing | JUnit 5, Mockito, Spring Boot Test, JaCoCo |
 
-### Add Category Page
-![Add Category Page](screenshots/07-add-category-page.png)
+## How to Run
 
-### Transactions Page
-![Transactions Page](screenshots/08-transactions-page.png)
+### Prerequisites
 
-### Add Transaction Page
-![Add Transaction Page](screenshots/09-add-transaction-page.png)
+- Java 17
+- Maven
+- MySQL 8
+- Environment variables set without hardcoding secrets
 
-### Goal Status Progress
-![Goal Status Progress](screenshots/10-goal-status-progress.png)
+### Required environment variables
 
-## 7. How to Run
+| Module | Variables |
+| --- | --- |
+| `savings-goals-app` | `DB_PASSWORD`, `ADMIN_PASSWORD` |
+| `goal-insights-service` | `DB_USERNAME`, `DB_PASSWORD` |
 
-1. Clone the repository.
-2. Open the project in IntelliJ IDEA.
-3. Create and configure a MySQL database.
-4. Update `src/main/resources/application-dev.properties`.
-5. Run `mvn clean install -DskipTests`.
-6. Start the Spring Boot application.
-7. Open `http://localhost:8080`.
+### Local configuration
 
-## 8. Default Admin User
+| Module | JDBC URL | Username | Port |
+| --- | --- | --- | --- |
+| `savings-goals-app` | `jdbc:mysql://localhost:3306/savings_goals_tracker?createDatabaseIfNotExist=true` | `root` | `8080` |
+| `goal-insights-service` | `jdbc:mysql://localhost:3306/goal_insights_db?createDatabaseIfNotExist=true` |`root` | `8081` |
 
-* username: `admin`
-* email: [admin@savingsgoalstracker.com](mailto:admin@savingsgoalstracker.com)
-* password is configured in `application-dev.properties` with `app.admin.password`
+### Start order
 
-## 9. Future Improvements
+1. Start MySQL.
+2. Start `goal-insights-service` first.
+3. Start `savings-goals-app` after the microservice is running.
+4. Open the main application at `http://localhost:8080`.
 
-Possible future improvements include charts, filtering, and more detailed admin functionality.
+### Commands
+
+```bash
+cd goal-insights-service
+mvn spring-boot:run
+```
+
+```bash
+cd savings-goals-app
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+## Testing
+
+- `savings-goals-app` includes service, controller, and security tests.
+- `goal-insights-service` includes service and controller tests.
+- The project uses JaCoCo for coverage reports.
+- Achieved coverage is approximately 72% for `savings-goals-app` and 76% for `goal-insights-service`.
+
+## Logging and Exception Handling
+
+- Both applications use SLF4J logging in services.
+- The main app logs user, category, savings goal, and transaction operations.
+- The microservice logs exchange-rate reads, writes, cache updates, and scheduled checks.
+- Both applications expose centralized `@RestControllerAdvice` handlers for domain and generic errors.
+
+## REST Microservice
+
+`goal-insights-service` exposes exchange-rate endpoints under `/api/exchange-rates`:
+
+- `GET /api/exchange-rates`
+- `POST /api/exchange-rates`
+- `PUT /api/exchange-rates/{id}`
+- `DELETE /api/exchange-rates/{id}`
+- `GET /api/exchange-rates/calculate?baseCurrency=...&targetCurrency=...`
+
+It enforces `EUR` as the base currency when creating exchange rates and supports cross-rate calculation when a direct rate is not present.
