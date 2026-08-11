@@ -224,10 +224,23 @@ src/test/resources
 
 ### Required environment variables
 
-| Module | Variables |
-| --- | --- |
-| `savings-goals-app` | `DB_PASSWORD`, `ADMIN_PASSWORD` |
-| `goal-insights-service` | `DB_USERNAME`, `DB_PASSWORD` |
+goal-insights-service
+
+DB_USERNAME=root
+DB_PASSWORD=<password for your local MySQL root user>
+
+savings-goals-app
+
+DB_PASSWORD=<password for your local MySQL root user>
+ADMIN_PASSWORD=<choose any password for the ADMIN user>
+
+For savings-goals-app set Active profiles to: dev
+
+The ADMIN user is created automatically when the application starts:
+
+username: admin
+email: admin@savingsgoalstracker.com
+password: the value set in ADMIN_PASSWORD
 
 ### Local configuration
 
