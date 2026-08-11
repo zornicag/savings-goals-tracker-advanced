@@ -219,28 +219,25 @@ src/test/resources
 
 - Java 17
 - Maven
-- MySQL 8
-- Environment variables set without hardcoding secrets
+- MySQL
+- Database and admin passwords are provided through environment variables.
 
 ### Required environment variables
 
-goal-insights-service
+**goal-insights-service**
+* DB_USERNAME=root
+* DB_PASSWORD=`<password for your local MySQL root user>`
 
-DB_USERNAME=root
-DB_PASSWORD=<password for your local MySQL root user>
-
-savings-goals-app
-
-DB_PASSWORD=<password for your local MySQL root user>
-ADMIN_PASSWORD=<choose any password for the ADMIN user>
-
-For savings-goals-app set Active profiles to: dev
+**savings-goals-app**
+* DB_PASSWORD=`<password for your local MySQL root user>`
+* ADMIN_PASSWORD=`<choose any password for the ADMIN user>`
+* Active profile: dev
 
 The ADMIN user is created automatically when the application starts:
 
-username: admin
-email: admin@savingsgoalstracker.com
-password: the value set in ADMIN_PASSWORD
+* username: admin
+* email: admin@savingsgoalstracker.com
+* password: the value set in ADMIN_PASSWORD
 
 ### Local configuration
 
