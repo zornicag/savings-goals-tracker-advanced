@@ -26,6 +26,10 @@ Spring Advanced project with two Spring Boot applications: a Spring MVC + Thymel
 - User profile view and update.
 - Password change with validation.
 - Category management.
+
+**Category requirement:** At least one category must exist before a savings goal can be created. If no categories exist, the user is redirected to create one. When a goal is created, the application automatically assigns the first available category to it.
+
+- Savings goal creation.
 - Savings goal management.
 - Deposit and withdrawal transactions.
 - Balance updates and goal progress tracking.
